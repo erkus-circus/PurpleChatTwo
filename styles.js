@@ -1,0 +1,1 @@
+export const purpleBackground = 'rgb(36, 12, 71)'
