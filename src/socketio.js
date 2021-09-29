@@ -26,4 +26,5 @@ export const accountSocket = io(SERVER + "/accounts", SERVEROPTS);
 
 chatSocket.on("invalid-uuid", (e) => {
     console.log("INVALID UUID");
+    
 })

@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableWithoutFeedback, Keyboard, Button, SegmentedControlIOSBase, StatusBar } from 'react-native';
-import { accountSocket, clientID, setClientID } from './socketio';
+import { accountSocket, chatSocket, clientID, setClientID } from './socketio';
 import "./socketio"
 import { purpleBackground } from '../styles';
 
@@ -60,6 +60,7 @@ export class LoginScreen extends React.Component {
     }
 
     async componentDidMount() {
+
         accountSocket.on("auth-user-res", async (res)=>{
             if(res) {
                 // store things
@@ -69,6 +70,7 @@ export class LoginScreen extends React.Component {
                 
                 // set the clientID
                 setClientID(res)
+
                 // go to chats screen
                 this.props.navigation.replace("ChatSelector")
             } else {
@@ -96,6 +98,7 @@ export class LoginScreen extends React.Component {
                     if (value.ok) {
                         // the userID is still valid, go to chats screen
                         setClientID({ user: username, userID })
+
                         this.props.navigation.replace("ChatSelector")
                     } else if (username && password) {
                         // try logging the user in, userID is there but expireds
@@ -103,7 +106,13 @@ export class LoginScreen extends React.Component {
                     }
                 })
             }
+
+            // get the users object from server
         })
+    }
+
+    componentWillUnmount() {
+        accountSocket.off("auth-user-res")
     }
 
     render() {
@@ -111,9 +120,12 @@ export class LoginScreen extends React.Component {
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <View style={styles.container}>
                     <StatusBar barStyle={"dark-content"} animated={true} />
+                    
                     <Text style={[styles.errorMessage, {color: this.state.color}]}>{this.state.errorMessage}</Text>
+
                     <Text style={styles.label} >Username: </Text>
-                    <TextInput style={styles.input} onChangeText={(text)=>this.setState({username: text})} value={this.state.username} autoCorrect={false} autoCapitalize={"none"} />
+                    <TextInput style={styles.input} clearButtonMode="always" onChangeText={(text)=>this.setState({username: text})} value={this.state.username} autoCorrect={false} autoCapitalize={"none"} />
+                    
                     <Text style={styles.label} >Password: </Text>
                     <TextInput style={styles.input} onChangeText={(text)=>this.setState({password: text})} value={this.state.password} onSubmitEditing={this.loginSubmit.bind(this)} blurOnSubmit secureTextEntry />
         

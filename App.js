@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { chatSocket } from './src/socketio';
@@ -36,10 +36,13 @@ const App = () => {
             console.log(err)
         })
 
+
         return () => {
             // socket.disconnect()
         }
     }, []);
+
+    const [users, setUsers] = useState([])
 
     return (
 
@@ -60,7 +63,8 @@ const App = () => {
                 <Stack.Screen name="ChatSelector" component={chatSelectScreen} options={({ navigation, route }) => ({
                     headerLeft: props => <Button title="Settings" onPress={() => navigation.navigate("Settings")} />,
                     headerRight: props => <Button title="New Chat" onPress={() => navigation.navigate({
-                        
+                        name: "New Chat",
+                        params: { users: users }
                     })} />
                 })} />
 

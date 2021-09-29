@@ -97,31 +97,7 @@ export class chatSelectScreen extends React.Component {
             this.setState({ enrolledChats: this.state.enrolledChats })
         })
 
-        chatSocket.on("chat-message", (message) => {
-            if (message.to === this.state.currentChat) {
-                return
-            };
-            
-            // mightg not always work
-            // not sure if i ever fixed this,
-
-            var index = this.state.enrolledChats.map((value) => value.id).indexOf(message.to)
-            if (index > 0 && message.to) {
-
-                var oldChat = this.state.enrolledChats.splice(index, 1)
-
-                Object.assign(oldChat[0], {
-                    viewed: oldChat[0].id === this.state.currentChat,
-                    lastUpdated: message.time
-                })
-
-                this.setState({
-                    enrolledChats: oldChat.concat(this.state.enrolledChats)
-                })
-            } else {
-                chatSocket.emit("get-enrolled-chats", clientID.userID, clientID.user)
-            }
-        })
+        chatSocket.on("chat-message", this.onChatMessageBound)
 
         chatSocket.on("new-groupchat", () => {
             // TODO: this is a super inneficient way of creating new groupchats
@@ -129,7 +105,38 @@ export class chatSelectScreen extends React.Component {
         });
     }
 
+    onChatMessage (message) {
+        if (message.to === this.state.currentChat) {
+            return
+        };
+        
+        // mightg not always work
+        // not sure if i ever fixed this,
+
+        var index = this.state.enrolledChats.map((value) => value.id).indexOf(message.to)
+        if (index > 0 && message.to) {
+
+            var oldChat = this.state.enrolledChats.splice(index, 1)
+
+            Object.assign(oldChat[0], {
+                viewed: oldChat[0].id === this.state.currentChat,
+                lastUpdated: message.time
+            })
+
+            this.setState({
+                enrolledChats: oldChat.concat(this.state.enrolledChats)
+            })
+        } else {
+            chatSocket.emit("get-enrolled-chats", clientID.userID, clientID.user)
+        }
+    }
+    onChatMessageBound = this.onChatMessage.bind(this)
+
     componentWillUnmount() {
+        chatSocket.off("enrolled-chats")
+        chatSocket.off("new-groupchat")
+        chatSocket.off("rename-chat")
+        chatSocket.off("chat-message", this.onChatMessageBound)
     }
 }
 

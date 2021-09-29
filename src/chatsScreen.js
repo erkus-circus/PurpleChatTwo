@@ -8,7 +8,7 @@ import { useHeaderHeight } from '@react-navigation/elements';
 import { useNavigation } from "@react-navigation/core";
 
 
-const styles = StyleSheet.create({
+export const chatStyles = StyleSheet.create({
     timeText: {
         fontSize: 11,
         color: "gray"
@@ -79,11 +79,12 @@ const CustomTextInput = (props) => {
     const [height, setHeight] = useState(25);
     
     return (
-        <View style={[styles.keyboardContainer, {height: height}]}>
+        <View style={[chatStyles.keyboardContainer, {height: height}]}>
             <TextInput
+            
             value={text}
             blurOnSubmit={false}
-            style={[styles.keyboard, {height: height}]}
+            style={[chatStyles.keyboard, {height: height}]}
             onChangeText={(text)=>{
                 setText(text)
             }}
@@ -105,7 +106,7 @@ const CustomTextInput = (props) => {
                 setText("")
             }}
             />
-            <Text style={styles.hidden} onLayout={(e)=>{
+            <Text style={chatStyles.hidden} onLayout={(e)=>{
                 var h = e.nativeEvent.layout.height;
                 h = h >= 25 ? h : 25
                 setHeight(h)
@@ -128,10 +129,10 @@ class Chat extends React.PureComponent {
         }
     
         return (
-            <View style={styles.messageContainer}>
+            <View style={chatStyles.messageContainer}>
                 {/* <Text style={styles.timeText}>{new Date(props.time).toLocaleString()}: </Text> */}
-                <Text style={styles[style]}>&lt;{this.props.sender}&gt;</Text>
-                <Text style={styles.messageText}> {this.props.message}</Text>
+                <Text style={chatStyles[style]}>&lt;{this.props.sender}&gt;</Text>
+                <Text style={chatStyles.messageText}> {this.props.message}</Text>
             </View>
         )
     }
@@ -156,13 +157,12 @@ class Chats extends React.PureComponent {
         // console.log(this.state.chats.length);
         if (this.state.chats.length === 0) {
             this.setState({ chats: messages.concat(this.state.chats), scrollToEnd: true})
-            setTimeout(()=>{
-                this.setState({scrollToEnd: true});
-            }, 5000)
         } else {
             this.setState({ chats: messages.concat(this.state.chats), scrollToTop: true })
         }
     }
+
+    boundLoadMessagesRes = this.loadMessageRes.bind(this)
 
     onChatMessage(message) {
         // console.log(message.to == this.props.data.id);
@@ -173,9 +173,11 @@ class Chats extends React.PureComponent {
         this.setState({ chats: this.state.chats.concat([message]), scrollToEnd: true })
     }
 
+    boundOnChatMessage = this.onChatMessage.bind(this)
+
     componentWillUnmount() {
-        chatSocket.off("load-messages-count-res", this.loadMessageRes.bind(this))
-        chatSocket.off("chat-message", this.onChatMessage.bind(this))
+        chatSocket.off("load-messages-count-res", this.boundLoadMessagesRes)
+        chatSocket.off("chat-message", this.boundOnChatMessage)
 
         this.setState({ toScroll: 1, chats: [] })
         // console.log("unmounting");
@@ -183,9 +185,9 @@ class Chats extends React.PureComponent {
 
     componentDidMount() {
         // console.log(this.props.data);
-        chatSocket.on("load-messages-count-res", this.loadMessageRes.bind(this))
+        chatSocket.on("load-messages-count-res", this.boundLoadMessagesRes)
 
-        chatSocket.on("chat-message", this.onChatMessage.bind(this))
+        chatSocket.on("chat-message", this.boundOnChatMessage)
         this.loadMoreChats("scrollEnd")
         // console.log("mounted");
 
@@ -216,7 +218,7 @@ class Chats extends React.PureComponent {
                 // console.log(this.state.scrollToEnd);
                 if (this.state.scrollToEnd) {
                     this.scrollView.scrollToEnd({animated: false})
-                    setTimeout(()=>this.scrollView.scrollToEnd(), 150)
+                    setTimeout(()=>this.scrollView.scrollToEnd(), 300)
                 } else if (this.state.scrollToTop) {
                     this.scrollView.scrollToIndex({index: 0, animated: false});
                 }
@@ -232,24 +234,31 @@ export const ChatScreen = (props) => {
     const navigation = useNavigation()
     
     useEffect(()=> {    
-        navigation.setOptions({ title: props.route.params.name })
+        navigation.setOptions({ 
+            title: props.route.params.name,
+            headerRight: () => <Button title={'Info'} onPress={() => navigation.navigate("Chat Info", { id: props.route.params.id })} />
+         })
 
-        chatSocket.on("rename-chat", (id, newName) => {
-        navigation.setOptions({ title: id == props.route.params.id ? newName : props.route.params.name })
+        const renameChat  =  (id, newName) => {
+            navigation.setOptions({ title: id == props.route.params.id ? newName : props.route.params.name })
+        }
 
-        })
+        chatSocket.on("rename-chat", renameChat)
 
+        return () => {
+            chatSocket.off("rename-chat", renameChat)
+        }
     }, []);
 
     return (
-        <View style={styles.background}>
+        <View style={chatStyles.background}>
             <StatusBar barStyle={"light-content"} animated={true} />
 
             {/* <Button style={styles.settingsButton} title="Logout" onPress={ ()=> navigation.navigate("Login") }/> */}
 
             <KeyboardAvoidingView
-                keyboardVerticalOffset={useHeaderHeight() } style={styles.content} behavior={Platform.OS === "ios" ? "padding" : "height"}>
-                <View style={styles.container}>
+                keyboardVerticalOffset={useHeaderHeight() } style={chatStyles.content} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+                <View style={chatStyles.container}>
                     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                         <Chats data={props.route.params} />
                     </TouchableWithoutFeedback>
