@@ -7,9 +7,10 @@ import { ChatScreen } from './src/chatsScreen';
 import { purpleBackground } from './styles';
 import { LoginScreen } from './src/loginScreen';
 import { chatSelectScreen } from './src/chatPicker';
-import { Button, StatusBar, View } from 'react-native';
+import { Button } from 'react-native';
 import { SettingsScreen } from './src/settingsScreen';
 import { NewChatScreen } from './src/newChatScreen';
+import { ChatInfoScreen } from './src/chatInfoScreen';
 // import { RegisterScreen } from './src/registerScreen';
 // import { chatListScreen } from './src/chatListScreen';
 
@@ -70,13 +71,14 @@ const App = () => {
 
                 <Stack.Screen name="Settings" component={SettingsScreen} />
                 <Stack.Screen name="New Chat" component={NewChatScreen} />
+                <Stack.Screen name="Chat Info" component={ChatInfoScreen} options={{
+                    presentation: "modal",
+                }} />
             </Stack.Navigator>
 
         </NavigationContainer>
 
     );
 }
-
-
 
 export default App;

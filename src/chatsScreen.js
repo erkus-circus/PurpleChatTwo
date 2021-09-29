@@ -233,10 +233,11 @@ export const ChatScreen = (props) => {
 
     const navigation = useNavigation()
     
+
     useEffect(()=> {    
         navigation.setOptions({ 
             title: props.route.params.name,
-            headerRight: () => <Button title={'Info'} onPress={() => navigation.navigate("Chat Info", { id: props.route.params.id })} />
+            headerRight: () => <Button title={'Info'} disabled={props.route.params.id==="chat-global"} onPress={() => navigation.navigate("Chat Info", { id: props.route.params.id })} />
          })
 
         const renameChat  =  (id, newName) => {

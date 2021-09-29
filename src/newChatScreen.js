@@ -86,7 +86,7 @@ export function NewChatScreen ({ navigation, route }) {
                 <TextInput autoCorrect={false} autoFocus={true} style={chatStyles.keyboard} onChangeText={(e) => {
                     setInput(e)
 
-                    setSelectableUsers(users.filter((user) => {
+                    setSelectableUsers(users.sort().filter((user) => {
                         var res = true;
                         for (let i = 0; i < e.length; i++) {
                             res = res && (user.toUpperCase().indexOf(e[i].toUpperCase()) > -1) && selectedUsers.indexOf(user) === -1 && user != clientID.user

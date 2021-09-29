@@ -146,11 +146,5 @@ const styles = StyleSheet.create({
     unread: {
         backgroundColor: "pink",
         color: "orange"
-    },
-    settingsButton: {
-        position: "absolute",
-
-        color: "white",
-        right: 0
     }
 })
