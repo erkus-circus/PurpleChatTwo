@@ -1,4 +1,4 @@
-import { StatusBar, unstable_enableLogBox } from "react-native"
+import { StatusBar, unstable_enableLogBox, Vibration } from "react-native"
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, TextInput, FlatList, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, Platform, Button } from 'react-native';
 import { chatSocket, clientID } from './socketio';
@@ -218,7 +218,7 @@ class Chats extends React.PureComponent {
                 // console.log(this.state.scrollToEnd);
                 if (this.state.scrollToEnd) {
                     this.scrollView.scrollToEnd({animated: false})
-                    setTimeout(()=>this.scrollView.scrollToEnd(), 300)
+                    setTimeout(()=>this.scrollView.scrollToEnd(), 700)
                 } else if (this.state.scrollToTop) {
                     this.scrollView.scrollToIndex({index: 0, animated: false});
                 }

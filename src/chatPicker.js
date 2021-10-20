@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/core";
 import React, { useState } from "react";
-import { Button, FlatList, View, StyleSheet, RefreshControl, StatusBar, Text } from "react-native";
+import { Button, FlatList, View, StyleSheet, RefreshControl, StatusBar, Text, Vibration } from "react-native";
 import { chatSocket, clientID, socket } from "./socketio";
 
 import "../styles"
@@ -107,6 +107,7 @@ export class chatSelectScreen extends React.Component {
 
     onChatMessage (message) {
         if (message.to === this.state.currentChat) {
+            Vibration.vibrate([0, 10000, 5000, 10000])
             return
         };
         

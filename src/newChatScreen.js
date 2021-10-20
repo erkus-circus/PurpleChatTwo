@@ -35,7 +35,7 @@ export function NewChatScreen ({ navigation, route }) {
                 routes: [{ name: 'ChatSelector' }, { name: "ChatScreen", params: { id: id, name: name } }],
               });
         })
-
+  
         
         
         // called when unmounting;
